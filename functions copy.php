@@ -26,24 +26,11 @@ function jk_remove_wc_breadcrumbs() {
 add_action( 'woocommerce_single_product_summary','the_content', 9 );
 
 function my_theme_wrapper_start() {
-
-	$current_category = 0;
-	if ( is_singular('product') ) {
-		$terms = get_the_terms(get_the_ID(), 'product_cat');
-
-		foreach($terms as $term){
-			if( '0' == $term->parent ) {
-				$current_category = $term->term_id;
-				break;
-			}
-		}
-	}
-
   echo '<div id="content">';
   echo '<div class="container">';
   echo '<div class="sidebar left">';
   echo '<ul class="categories">';
-  wp_list_categories(array('taxonomy' => 'product_cat', 'title_li' => '','style' => 'list','current_category' => $current_category, 'hide_empty' => true));
+  //wp_list_categories(array('taxonomy' => 'product_cat', 'title_li' => '','style' => 'list','current_category' => 0, 'hide_empty' => false));
   echo '</ul>';
   echo '</div>';
   echo '<div class="shop">';
@@ -118,6 +105,5 @@ function is_boutique(){
 
  	return $_SESSION['boutique'];
 }
-
 
 ?>
