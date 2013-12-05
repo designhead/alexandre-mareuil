@@ -27,16 +27,24 @@ add_action( 'woocommerce_single_product_summary','the_content', 9 );
 
 function my_theme_wrapper_start() {
 
-	$current_category = 0;
+	$current_category = 0; $current_term = null;
 	if ( is_singular('product') ) {
 		$terms = get_the_terms(get_the_ID(), 'product_cat');
 
 		foreach($terms as $term){
 			if( '0' == $term->parent ) {
-				$current_category = $term->term_id;
+				$current_term = $term;
 				break;
 			}
 		}
+	} elseif ( is_product_category() ) {
+		$current_term = get_queried_object();
+	}
+
+	if( is_object( $current_term ) ) {
+		$ancestors = get_ancestors($current_term, 'product-cat');
+
+		$current_category = $current_term->term_id;
 	}
 
   echo '<div id="content">';
