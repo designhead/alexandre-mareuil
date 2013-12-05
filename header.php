@@ -14,10 +14,12 @@
 	<link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/css/styles.css">
 	<link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/styles/font-awesome.min.css">
 	
+	
 	<link href='http://fonts.googleapis.com/css?family=Cardo:400,400italic,700|Pontano+Sans&subset=latin,greek-ext,latin-ext' rel='stylesheet' type='text/css'>
 	
 	<?php if ( is_singular() ) wp_enqueue_script( 'comment-reply' ); ?>
 	<?php wp_head(); ?>
+	<script src="<?php bloginfo('template_directory'); ?>/js/jquery.flexslider.js" type="text/javascript"></script>
 </head>
 
 <body <?php body_class(); ?>>
