@@ -22,45 +22,24 @@
 	?>
 </div>
 
-	<?php
+<?php
 
-global $post;     // if outside the loop
-
-if ( is_shop() ) {
+if( is_boutique() ) {
     echo '<div class="bg shop"></div>';
-
-}
-elseif ( is_product_category() ) {
-    echo '<div class="bg shop"></div>';
-}
-elseif ( is_product() ) {
-    echo '<div class="bg shop"></div>';
-}
-elseif ( is_product_tag() ) {
-    echo '<div class="bg shop"></div>';
-}
-elseif ( is_cart() ) {
-    echo '<div class="bg shop"></div>';
-}
-elseif ( is_checkout() ) {
-    echo '<div class="bg shop"></div>';
-}
-elseif ( is_account_page() ) {
-    echo '<div class="bg shop"></div>';
-}
-else {
+} else {
     echo '<div class="bg"></div>';
 }
+
 ?>
 
 <!-- Start Google Analytics implementation -->
 <script type="text/javascript">
   function ccAddAnalytics(){
-    $.getScript('http://www.google-analytics.com/ga.js', function() { 
+    $.getScript('http://www.google-analytics.com/ga.js', function() {
       var GATracker = _gat._createTracker('UA-XXXXXXX-X');
-      GATracker._trackPageview(); 
+      GATracker._trackPageview();
     } );
-  }; 
+  };
 </script>
 <!-- End Google Analytics implementation -->
 

@@ -119,31 +119,35 @@ if ( function_exists('register_sidebar') ) {
  *	Switch between boutique modes
  */
 session_start();
-function alex_mareuil_set_boutique(){
-	global $post;
+function alex_mareuil_set_boutique($template){
 
-	if ( is_admin() ) return;
+	if( is_page() )
+		boutique_off();
 
-	if( is_page() ) { //is_page( woocommerce_get_page_id( 'shop' ))
-		// turn off boutique presentation
-		$_SESSION['boutique'] = false;
-
-		// determine if we are on the "boutique" or "shop" page
-		$boutique = get_page_by_path('boutique'); // get the boutique page id
-
-		$boutique_fr = icl_object_id($post->ID, 'page', true, 'fr'); // translate the id of the current page to french
-
-		if( $boutique == $boutique_fr ) $_SESSION['boutique'] = true;
-
+	if( strpos ( $template, 'archive-product.php' ) ||
+		( isset( $_GET['boutique'] ) && 'on' == $_GET['boutique'] ) ) {
+		boutique_on();
 	}
 
+	if( isset( $_GET['boutique'] ) && 'off' == $_GET['boutique'] )
+		boutique_off();
+
+	return $template;
 }
-add_action('init', 'alex_mareuil_set_boutique');
+add_filter('template_include', 'alex_mareuil_set_boutique', 999);
+
+function boutique_on() {
+	$_SESSION['boutique'] = true;
+}
+
+function boutique_off() {
+	$_SESSION['boutique'] = false;
+}
 
 function is_boutique(){
 
  	if( ! isset( $_SESSION['boutique'] ) ){
- 		$_SESSION['boutique'] = false;
+ 		boutique_off();
  	}
 
  	return $_SESSION['boutique'];
