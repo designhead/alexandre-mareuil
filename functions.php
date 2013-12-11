@@ -27,31 +27,53 @@ add_action( 'woocommerce_single_product_summary','the_content', 9 );
 
 function my_theme_wrapper_start() {
 
+	/**
+	 *	Determine what the current category to highlight
+	 */
 	$current_category = 0; $current_term = null;
 	if ( is_singular('product') ) {
 		$terms = get_the_terms(get_the_ID(), 'product_cat');
 
-		foreach($terms as $term){
-			if( '0' == $term->parent ) {
-				$current_term = $term;
-				break;
-			}
+		// get the first term returned.
+		foreach($terms as $_term){
+			$current_term = $_term;
+			break;
 		}
+		$current_category = $current_term->term_id;
+
 	} elseif ( is_product_category() ) {
 		$current_term = get_queried_object();
+		$current_category = $current_term->term_id;
 	}
 
-	if( is_object( $current_term ) ) {
-		$ancestors = get_ancestors($current_term, 'product-cat');
+	$output = wp_list_categories(array(
+		'taxonomy' => 'product_cat',
+		'title_li' => '',
+		'style' => 'list',
+		'current_category' => $current_category,
+		'hide_empty' => false,
+		'echo' => false
+	));
 
-		$current_category = $current_term->term_id;
+	/**
+	 *	If we have a current category
+	 */
+	if( is_object( $current_term ) ) {
+		$term_ids = get_ancestors($current_term->term_id, 'product_cat');
+
+		foreach($term_ids as $ancestor) {
+			$pattern = '/(cat-item-'.$ancestor.')/';
+			$output = preg_replace ( $pattern, '$1 current-cat-ancestor', $output );
+		}
 	}
 
   echo '<div id="content">';
   echo '<div class="container">';
   echo '<div class="sidebar left">';
   echo '<ul class="categories">';
-  wp_list_categories(array('taxonomy' => 'product_cat', 'title_li' => '','style' => 'list','current_category' => $current_category, 'hide_empty' => true));
+
+	echo $output;
+
   echo '</ul>';
   echo '</div>';
   echo '<div class="shop">';
