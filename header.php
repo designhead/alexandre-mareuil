@@ -20,6 +20,7 @@
 	<?php if ( is_singular() ) wp_enqueue_script( 'comment-reply' ); ?>
 	<?php wp_head(); ?>
 	<script src="<?php bloginfo('template_directory'); ?>/js/jquery.flexslider.js" type="text/javascript"></script>
+	
 </head>
 
 <body <?php body_class(); ?>>

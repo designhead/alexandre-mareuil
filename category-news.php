@@ -2,6 +2,11 @@
 
 <div id="content">
 	<div class="container">
+		<div class="sidebar left">
+			<ul class="categories">
+				<?php wp_list_categories('&title_li='); ?>
+			</ul>
+		</div>
 		<div class="main-content">
 			<?php if (have_posts()) : ?>
 	
