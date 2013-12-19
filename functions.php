@@ -27,15 +27,43 @@ add_action( 'woocommerce_single_product_summary','the_content', 9 );
 
 function my_theme_wrapper_start() {
 
-	$current_category = 0;
+	/**
+	 *	Determine what the current category to highlight
+	 */
+	$current_category = 0; $current_term = null;
 	if ( is_singular('product') ) {
 		$terms = get_the_terms(get_the_ID(), 'product_cat');
 
-		foreach($terms as $term){
-			if( '0' == $term->parent ) {
-				$current_category = $term->term_id;
-				break;
-			}
+		// get the first term returned.
+		foreach($terms as $_term){
+			$current_term = $_term;
+			break;
+		}
+		$current_category = $current_term->term_id;
+
+	} elseif ( is_product_category() ) {
+		$current_term = get_queried_object();
+		$current_category = $current_term->term_id;
+	}
+
+	$output = wp_list_categories(array(
+		'taxonomy' => 'product_cat',
+		'title_li' => '',
+		'style' => 'list',
+		'current_category' => $current_category,
+		'hide_empty' => false,
+		'echo' => false
+	));
+
+	/**
+	 *	If we have a current category
+	 */
+	if( is_object( $current_term ) ) {
+		$term_ids = get_ancestors($current_term->term_id, 'product_cat');
+
+		foreach($term_ids as $ancestor) {
+			$pattern = '/(cat-item-'.$ancestor.')/';
+			$output = preg_replace ( $pattern, '$1 current-cat-ancestor', $output );
 		}
 	}
 
@@ -43,7 +71,9 @@ function my_theme_wrapper_start() {
   echo '<div class="container">';
   echo '<div class="sidebar left">';
   echo '<ul class="categories">';
-  wp_list_categories(array('taxonomy' => 'product_cat', 'title_li' => '','style' => 'list','current_category' => $current_category, 'hide_empty' => true));
+
+	echo $output;
+
   echo '</ul>';
   echo '</div>';
   echo '<div class="shop">';
@@ -89,31 +119,36 @@ if ( function_exists('register_sidebar') ) {
  *	Switch between boutique modes
  */
 session_start();
-function alex_mareuil_set_boutique(){
-	global $post;
+function alex_mareuil_set_boutique($template){
 
-	if ( is_admin() ) return;
-
-	if( is_page() ) { //is_page( woocommerce_get_page_id( 'shop' ))
-		// turn off boutique presentation
-		$_SESSION['boutique'] = false;
-
-		// determine if we are on the "boutique" or "shop" page
-		$boutique = get_page_by_path('boutique'); // get the boutique page id
-
-		$boutique_fr = icl_object_id($post->ID, 'page', true, 'fr'); // translate the id of the current page to french
-
-		if( $boutique == $boutique_fr ) $_SESSION['boutique'] = true;
-
+	if( is_page() ){
+		boutique_off();
 	}
 
+	if( strpos ( $template, 'archive-product.php' ) ||
+		( isset( $_GET['boutique'] ) && 'on' == $_GET['boutique'] ) ) {
+		boutique_on();
+	}
+
+	if( isset( $_GET['boutique'] ) && 'off' == $_GET['boutique'] )
+		boutique_off();
+
+	return $template;
 }
-add_action('init', 'alex_mareuil_set_boutique');
+add_filter('template_include', 'alex_mareuil_set_boutique', 999);
+
+function boutique_on() {
+	$_SESSION['boutique'] = true;
+}
+
+function boutique_off() {
+	$_SESSION['boutique'] = false;
+}
 
 function is_boutique(){
 
  	if( ! isset( $_SESSION['boutique'] ) ){
- 		$_SESSION['boutique'] = false;
+ 		boutique_off();
  	}
 
  	return $_SESSION['boutique'];
