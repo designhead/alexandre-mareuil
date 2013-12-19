@@ -121,8 +121,9 @@ if ( function_exists('register_sidebar') ) {
 session_start();
 function alex_mareuil_set_boutique($template){
 
-	if( is_page() )
+	if( is_page() ){
 		boutique_off();
+	}
 
 	if( strpos ( $template, 'archive-product.php' ) ||
 		( isset( $_GET['boutique'] ) && 'on' == $_GET['boutique'] ) ) {
